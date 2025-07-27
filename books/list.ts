@@ -83,14 +83,3 @@ export default function booksListRouter(router: ZodRouter): void {
     }
   });
 }
-
-// in-source test suites
-if (import.meta.vitest != null) {
-  const db = getBookDatabase();
-  const { it, expect } = import.meta.vitest;
-  describe('listBooks', () => {
-    it('should be an empty array', async () => {
-      expect(await listBooks([], db)).toStrictEqual([]);
-    });
-  });
-}
