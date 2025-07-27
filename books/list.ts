@@ -1,9 +1,8 @@
 import { type ZodRouter } from 'koa-zod-router';
-import type { WithId } from 'mongodb';
-import { describe } from 'vitest';
+import { type Collection, type WithId } from 'mongodb';
 import { z } from 'zod';
 import { type Book } from '../adapter/assignment-2.js';
-import { type BookDatabaseAccessor, getBookDatabase } from '../database_access.js';
+import { getBookDatabase } from '../database_access.js';
 
 interface Filter {
   from?: number;
@@ -12,7 +11,7 @@ interface Filter {
   author?: string;
 };
 
-async function listBooks(filters: Filter[], db: BookDatabaseAccessor): Promise<Book[]> {
+async function listBooks(filters: Filter[], bookCollection: Collection<Book>): Promise<Book[]> {
   const validFilters = filters?.filter(({ from, to, name, author }) =>
     typeof from === 'number' ||
     typeof to === 'number' ||
@@ -41,7 +40,7 @@ async function listBooks(filters: Filter[], db: BookDatabaseAccessor): Promise<B
     }
     : {};
 
-  const bookList = await db.bookCollection.find(query).map((document: WithId<Book>) => {
+  const bookList = await bookCollection.find(query)?.map((document: WithId<Book>) => {
     const book: Book = {
       id: document._id.toHexString(),
       name: document.name,
@@ -76,7 +75,7 @@ export default function booksListRouter(router: ZodRouter): void {
 
       const db = getBookDatabase();
 
-      const result = await listBooks(filters, db);
+      const result = await listBooks(filters, db.bookCollection);
       ctx.body = result;
 
       await next();
