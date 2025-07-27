@@ -1,9 +1,9 @@
-import { z } from 'zod'
-import { type ZodRouter } from 'koa-zod-router'
-import { bookCollection } from '../database_access'
-import { ObjectId } from 'mongodb'
+import { z } from 'zod';
+import { type ZodRouter } from 'koa-zod-router';
+import { bookCollection } from '../database_access.js';
+import { ObjectId } from 'mongodb';
 
-export default function createOrUpdateBook (router: ZodRouter): void {
+export default function createOrUpdateBook(router: ZodRouter): void {
   router.register({
     name: 'create or update a book',
     method: 'post',
@@ -19,10 +19,10 @@ export default function createOrUpdateBook (router: ZodRouter): void {
       })
     },
     handler: async (ctx, next) => {
-      const body = ctx.request.body
+      const body = ctx.request.body;
 
       if (typeof body.id === 'string') {
-        const id = body.id
+        const id = body.id;
         try {
           const result = await bookCollection.replaceOne({ _id: { $eq: ObjectId.createFromHexString(id) } }, {
             id,
@@ -31,14 +31,14 @@ export default function createOrUpdateBook (router: ZodRouter): void {
             price: body.price,
             author: body.author,
             image: body.image
-          })
+          });
           if (result.modifiedCount === 1) {
-            ctx.body = { id }
+            ctx.body = { id };
           } else {
-            ctx.statusCode = 404
+            ctx.statusCode = 404;
           }
         } catch (e) {
-          ctx.statusCode = 500
+          ctx.statusCode = 500;
         }
       } else {
         try {
@@ -48,13 +48,13 @@ export default function createOrUpdateBook (router: ZodRouter): void {
             price: body.price,
             author: body.author,
             image: body.image
-          })
-          ctx.body = { id: result.insertedId }
+          });
+          ctx.body = { id: result.insertedId };
         } catch (e) {
-          ctx.statusCode = 500
+          ctx.statusCode = 500;
         }
       }
-      await next()
+      await next();
     }
-  })
+  });
 }

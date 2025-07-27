@@ -10,7 +10,8 @@
     "fix-lint": "eslint --fix ./**/*.ts",
     "check-types": "tsc --noEmit",
     "test:ci": "vitest run",
-    "test:watch": "vitest watch"
+    "test:watch": "vitest watch",
+    "check-ci": "npm run fix-lint && npm run check-types && npm run test:ci"
   },
   "keywords": [],
   "author": "",
