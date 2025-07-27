@@ -5,6 +5,7 @@ import qs from 'koa-qs';
 import booksList from './books/list.js';
 import createOrUpdateBook from './books/create_or_update.js';
 import deleteBook from './books/delete.js';
+import getBookByIdRouter from './books/getBookById.js';
 
 const app = new Koa();
 
@@ -15,6 +16,9 @@ qs(app);
 app.use(cors());
 
 const router = zodRouter();
+
+// Setup Get Book By ID Route
+getBookByIdRouter(router);
 
 // Setup Book List Route
 booksList(router);
@@ -28,5 +32,5 @@ deleteBook(router);
 app.use(router.routes());
 
 app.listen(3000, () => {
-  console.log('listening!');
+  console.log('listening on http://localhost:3000');
 });
