@@ -10,6 +10,10 @@ const uri = (global as any).MONGO_URI as string ?? 'mongodb://mongo';
 // a typed collection for our books.
 export const client = new MongoClient(uri);
 
+/**
+ * Books Database
+ */
+
 export interface BookDatabaseAccessor {
   database: Db,
   bookCollection: Collection<Book>;
@@ -25,3 +29,37 @@ export function getBookDatabase(): BookDatabaseAccessor {
     bookCollection,
   };
 }
+
+/**
+ * Warehouse Database
+ */
+
+export interface WarehouseBook {
+  bookId: string;
+  stock: number;
+  shelf: string;
+}
+
+export interface WarehouseOrder {
+  books: string[];
+}
+
+export interface WarehouseDatabaseAccessor {
+  database: Db,
+  warehouseBooksCollection: Collection<WarehouseBook>;
+  warehouseOrdersCollection: Collection<WarehouseOrder>;
+}
+
+export function getWarehouseDatabase(): WarehouseDatabaseAccessor {
+  // make a random db name for testing
+  const database = client.db((global as any).MONGO_URI !== undefined ? Math.floor(Math.random() * 100000).toPrecision() : 'mcmasterful-books');
+  const warehouseBooksCollection = database.collection<WarehouseBook>('warehouseBooks');
+  const warehouseOrdersCollection = database.collection<WarehouseOrder>('warehouseOrders');
+
+  return {
+    database,
+    warehouseOrdersCollection,
+    warehouseBooksCollection
+  };
+}
+
