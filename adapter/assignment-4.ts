@@ -95,7 +95,22 @@ async function findBookOnShelf(book: BookID): Promise<WarehouseBook[] | null> {
 }
 
 async function fulfilOrder(order: OrderId, booksFulfilled: Array<{ book: BookID, shelf: ShelfId, numberOfBooks: number; }>): Promise<void> {
-  throw new Error('Todo');
+  // get each book by ID - check if it exists, in the correct shelf, with enough stock
+  // get order by ID - check if order exists
+  // if not both, return 400
+  // delete order
+  // update book stock - if new stock is 0, remove book
+  const result = await fetch(`http://localhost:3000/warehouse/orders/${order}/fulfillment`, {
+    method: 'POST',
+    body: JSON.stringify({ booksFulfilled }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+
+  if (!result.ok) {
+    throw new Error(`Failed to fulfill order in warehouse`);
+  }
 }
 
 export interface Order {
