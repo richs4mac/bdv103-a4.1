@@ -36,7 +36,7 @@ export function getBookDatabase(): BookDatabaseAccessor {
 
 export interface WarehouseBook {
   bookId: string;
-  stock: number;
+  count: number;
   shelf: string;
 }
 

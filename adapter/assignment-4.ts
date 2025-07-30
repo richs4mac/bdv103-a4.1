@@ -48,7 +48,17 @@ export type ShelfId = string;
 export type OrderId = string;
 
 async function placeBooksOnShelf(bookId: BookID, numberOfBooks: number, shelf: ShelfId): Promise<void> {
-  throw new Error('Todo');
+  const result = await fetch('http://localhost:3000/warehouse/books', {
+    method: 'POST',
+    body: JSON.stringify({ bookId, count: numberOfBooks, shelf }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+
+  if (!result.ok) {
+    throw new Error(`Failed to place book ${bookId} on shelf in warehouse`);
+  }
 }
 
 async function orderBooks(order: BookID[]): Promise<{ orderId: OrderId; }> {

@@ -6,6 +6,7 @@ import booksList from './books/list.js';
 import createOrUpdateBook from './books/create_or_update.js';
 import deleteBook from './books/delete.js';
 import getBookByIdRouter from './books/getBookById.js';
+import placeBookOnShelf from './warehouse/createBook.js';
 
 const app = new Koa();
 
@@ -16,6 +17,10 @@ qs(app);
 app.use(cors());
 
 const router = zodRouter();
+
+/**
+ * Books router
+ */
 
 // Setup Get Book By ID Route
 getBookByIdRouter(router);
@@ -28,6 +33,12 @@ createOrUpdateBook(router);
 
 // Setup Book Delete Route
 deleteBook(router);
+
+/**
+ * Warehouse router
+ */
+
+placeBookOnShelf(router);
 
 app.use(router.routes());
 
