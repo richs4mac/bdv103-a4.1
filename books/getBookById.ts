@@ -1,10 +1,10 @@
 import { type ZodRouter } from 'koa-zod-router';
-import { ObjectId, type WithId, type Collection } from 'mongodb';
+import { type Collection, ObjectId, type WithId } from 'mongodb';
 import { z } from 'zod';
-import { type Book } from '../adapter/assignment-2.js';
-import { getBookDatabase } from '../database_access.js';
+import { type Book } from '../adapter/assignment-4.js';
+import { getBookDatabase, getWarehouseDatabase, type WarehouseBook } from '../database_access.js';
 
-function convertBookFromDocument(document: WithId<Book> | null): Book | null {
+function convertBookFromDocument(document: WithId<Book> | null, warehouseCount: number): Book | null {
   if (document === null) return null;
 
   return {
@@ -13,14 +13,26 @@ function convertBookFromDocument(document: WithId<Book> | null): Book | null {
     image: document.image,
     price: document.price,
     author: document.author,
-    description: document.description
+    description: document.description,
+    stock: warehouseCount,
   };
 };
 
-async function getBookById(bookId: string, bookCollection: Collection<Book>): Promise<Book | null> {
+async function getBookById(bookId: string, bookCollection: Collection<Book>, warehouseBooksCollection: Collection<WarehouseBook>): Promise<Book | null> {
   const document = await bookCollection.findOne({ _id: new ObjectId(bookId) });
 
-  const result = convertBookFromDocument(document);
+  // get all warehouse books with this book ID and add up their counts together
+  const warehouseCount = await warehouseBooksCollection.find({ book: new ObjectId(bookId) })?.map((document) => document.count
+  ).toArray().then(arr => {
+    // it wouldn't let me use arr.reduce here, it said arr didn't have an iterator
+    let total = 0;
+    arr.forEach(item => {
+      total += item;
+    });
+    return total;
+  });
+
+  const result = convertBookFromDocument(document, warehouseCount);
 
   return result;
 }
@@ -36,9 +48,10 @@ export default function getBookByIdRouter(router: ZodRouter): void {
     },
     handler: async (ctx, next) => {
       const { id } = ctx.request.params;
-      const db = getBookDatabase();
+      const booksDb = getBookDatabase();
+      const warehouseDb = getWarehouseDatabase();
 
-      const result = await getBookById(id, db.bookCollection);
+      const result = await getBookById(id, booksDb.bookCollection, warehouseDb.warehouseBooksCollection);
       ctx.body = result;
 
       await next();

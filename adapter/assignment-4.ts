@@ -19,9 +19,14 @@ export interface Filter {
   author?: string;
 };
 
+export interface WarehouseBook {
+  shelf: ShelfId, count: number;
+}
+
 // If multiple filters are provided, any book that matches at least one of them should be returned
 // Within a single filter, a book would need to match all the given conditions
 async function listBooks(filters?: Filter[]): Promise<Book[]> {
+  // updated this endpoint to return stock #
   return await previous_assignment.listBooks(filters);
 }
 
@@ -33,14 +38,15 @@ async function removeBook(book: BookID): Promise<void> {
   await previous_assignment.removeBook(book);
 }
 
-async function lookupBookById(book: BookID): Promise<Book> {
+export async function lookupBookById(book: BookID): Promise<Book | null> {
   const result = await fetch(`http://localhost:3000/books/${book}`);
 
   if (result.ok) {
     // And if it is valid, we parse the JSON result and return it.
     return await result.json() as Book;
   } else {
-    throw new Error(`Failed to fetch book ${book}`);
+    console.error((`Failed to fetch book ${book}`));
+    return null;
   }
 }
 
