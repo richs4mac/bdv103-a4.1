@@ -68,11 +68,19 @@ async function placeBooksOnShelf(bookId: BookID, numberOfBooks: number, shelf: S
 }
 
 async function orderBooks(order: BookID[]): Promise<{ orderId: OrderId; }> {
-  throw new Error('Todo');
-}
+  const result = await fetch('http://localhost:3000/warehouse/orders', {
+    method: 'POST',
+    body: JSON.stringify({ order }),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
 
-export interface WarehouseBook {
-  shelf: ShelfId, count: number;
+  if (result.ok) {
+    return await result.json() as { orderId: OrderId; };
+  } else {
+    throw new Error(`Failed to create order in warehouse`);
+  }
 }
 
 async function findBookOnShelf(book: BookID): Promise<WarehouseBook[] | null> {
