@@ -9,6 +9,7 @@ import getBookByIdRouter from './books/getBookById.js';
 import placeBookOnShelf from './warehouse/placeBookOnShelf.js';
 import warehouseBookByIdRouter from './warehouse/getBookById.js';
 import orderBooks from './warehouse/createOrder.js';
+import ordersListRouter from './warehouse/getOrders.js';
 
 const app = new Koa();
 
@@ -43,6 +44,7 @@ deleteBook(router);
 placeBookOnShelf(router);
 warehouseBookByIdRouter(router);
 orderBooks(router);
+ordersListRouter(router);
 
 app.use(router.routes());
 

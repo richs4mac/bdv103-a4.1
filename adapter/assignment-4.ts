@@ -98,8 +98,18 @@ async function fulfilOrder(order: OrderId, booksFulfilled: Array<{ book: BookID,
   throw new Error('Todo');
 }
 
-async function listOrders(): Promise<Array<{ orderId: OrderId, books: Record<BookID, number>; }>> {
-  throw new Error('Todo');
+export interface Order {
+  orderId: OrderId, books: Record<BookID, number>;
+}
+async function listOrders(): Promise<Order[] | null> {
+  const result = await fetch(`http://localhost:3000/warehouse/orders`);
+
+  if (result.ok) {
+    // And if it is valid, we parse the JSON result and return it.
+    return await result.json() as Order[];
+  } else {
+    throw new Error('Failed to fetch orders');
+  }
 }
 
 const assignment = 'assignment-4';
