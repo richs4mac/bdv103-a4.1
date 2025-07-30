@@ -6,7 +6,8 @@ import booksList from './books/list.js';
 import createOrUpdateBook from './books/create_or_update.js';
 import deleteBook from './books/delete.js';
 import getBookByIdRouter from './books/getBookById.js';
-import placeBookOnShelf from './warehouse/createBook.js';
+import placeBookOnShelf from './warehouse/placeBookOnShelf.js';
+import warehouseBookByIdRouter from './warehouse/getBookById.js';
 
 const app = new Koa();
 
@@ -39,6 +40,7 @@ deleteBook(router);
  */
 
 placeBookOnShelf(router);
+warehouseBookByIdRouter(router);
 
 app.use(router.routes());
 

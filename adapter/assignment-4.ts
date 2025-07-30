@@ -65,8 +65,19 @@ async function orderBooks(order: BookID[]): Promise<{ orderId: OrderId; }> {
   throw new Error('Todo');
 }
 
-async function findBookOnShelf(book: BookID): Promise<Array<{ shelf: ShelfId, count: number; }>> {
-  throw new Error('Todo');
+export interface WarehouseBook {
+  shelf: ShelfId, count: number;
+}
+
+async function findBookOnShelf(book: BookID): Promise<WarehouseBook[] | null> {
+  const result = await fetch(`http://localhost:3000/warehouse/books/${book}`);
+
+  if (result.ok) {
+    return await result.json() as WarehouseBook[];
+  } else {
+    console.error((`Failed to fetch book ${book}`));
+    return null;
+  }
 }
 
 async function fulfilOrder(order: OrderId, booksFulfilled: Array<{ book: BookID, shelf: ShelfId, numberOfBooks: number; }>): Promise<void> {
